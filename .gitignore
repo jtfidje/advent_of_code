@@ -4,6 +4,7 @@
 # Python
 .pytest_cache
 __pycache__
+setup.py
 
 # Rust
 target/
