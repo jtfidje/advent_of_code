@@ -88,20 +88,18 @@ def solve_2(path: str) -> int:
 
 if __name__ == "__main__":
     path = "example.txt"
-    ans_1 = solve_1(path)
-    print(f"Example 1: {{ans_1}}")
-    
+    ans_1 = solve_1(path)    
     ans_2 = solve_2(path)
-    print(f"Example 2:{{ans_2}}")
-
-    print("\n- - -\n)
 
     path = "input.txt"
     ans_1 = solve_1(path)
-    print(f"Problem 1: {{ans_1}}")
-    
     ans_2 = solve_2(path)
-    print(f"Problem 2:{{ans_2}}")
+    
+    print(f"Example 1: {{ans_1}}")
+    print(f"Example 2: {{ans_2}}")
+    print("\n- - -\n")
+    print(f"Problem 1: {{ans_1}}")
+    print(f"Problem 2: {{ans_2}}")
 """
 with open(project_run_path, "w") as f:
     f.write(run_template)
