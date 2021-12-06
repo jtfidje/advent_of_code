@@ -34,7 +34,7 @@ project_path = f"{pathlib.Path(__file__).parent.absolute()}/day_{day}"
 
 subprocess.run(["poetry", "new", f"day_{day}"])
 os.chdir(project_path)
-subprocess.run(["poetry", "update"])
+subprocess.run(["poetry", "add", "pyperclip"])
 subprocess.run(["touch", "example.txt", f"day_{day}/cleaned.py"])
 
 
@@ -91,6 +91,7 @@ with open(project_tests_path, "w") as f:
 project_run_path = f"{project_path}/day_{day}/run.py"
 print("Writing run templates into:", project_run_path)
 run_template = f"""
+import pyperclip
 from typing import List
 
 def read_lines(path: str) -> List[str]:
@@ -124,6 +125,9 @@ if __name__ == "__main__":
     print("\\n- - -\\n")
     print(f"Problem 1: {{ans_1_input}}")
     print(f"Problem 2: {{ans_2_input}}")
+
+    pyperclip.copy(ans_1_input)
+    # pyperclip.copy(ans_2_input)
 """
 with open(project_run_path, "w") as f:
     f.write(run_template)
