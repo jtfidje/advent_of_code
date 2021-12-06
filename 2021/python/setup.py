@@ -52,14 +52,14 @@ with open(project_input_path, "w") as f:
 project_tests_path = f"{project_path}/tests/test_day_{day}.py"
 print("Writing test templates into:", project_tests_path)
 test_template = f"""
-from day_{day}.run import solve_1, solve_2
+from day_{day} import run
 
-def test_solve_1_1():
-    assert solve_1("example.txt") == None
+def test_solve_1_run_example():
+    assert run.solve_1("example.txt") == None
 
 
-def test_solve_2_1():
-    assert solve_2("example.txt") == None
+def test_solve_2_run_example():
+    assert run.solve_2("example.txt") == None
 """
 with open(project_tests_path, "w") as f:
     f.write(test_template)
@@ -88,18 +88,18 @@ def solve_2(path: str) -> int:
 
 if __name__ == "__main__":
     path = "example.txt"
-    ans_1 = solve_1(path)    
-    ans_2 = solve_2(path)
+    ans_1_example = solve_1(path)    
+    ans_2_example = solve_2(path)
 
     path = "input.txt"
-    ans_1 = solve_1(path)
-    ans_2 = solve_2(path)
+    ans_1_input = solve_1(path)
+    ans_2_input = solve_2(path)
     
-    print(f"Example 1: {{ans_1}}")
-    print(f"Example 2: {{ans_2}}")
-    print("\n- - -\n")
-    print(f"Problem 1: {{ans_1}}")
-    print(f"Problem 2: {{ans_2}}")
+    print(f"Example 1: {{ans_1_example}}")
+    print(f"Example 2: {{ans_2_example}}")
+    print("\\n- - -\\n")
+    print(f"Problem 1: {{ans_1_input}}")
+    print(f"Problem 2: {{ans_2_input}}")
 """
 with open(project_run_path, "w") as f:
     f.write(run_template)
