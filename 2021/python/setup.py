@@ -35,7 +35,7 @@ project_path = f"{pathlib.Path(__file__).parent.absolute()}/day_{day}"
 subprocess.run(["poetry", "new", f"day_{day}"])
 os.chdir(project_path)
 subprocess.run(["poetry", "update"])
-subprocess.run(["touch", "example.txt"])
+subprocess.run(["touch", "example.txt", f"day_{day}/cleaned.py"])
 
 
 print("Getting input from:", aoc_input_url)
@@ -52,7 +52,7 @@ with open(project_input_path, "w") as f:
 project_tests_path = f"{project_path}/tests/test_day_{day}.py"
 print("Writing test templates into:", project_tests_path)
 test_template = f"""
-from day_{day} import run
+from day_{day} import run, cleaned
 
 def test_solve_1_run_example():
     assert run.solve_1("example.txt") == None
@@ -60,6 +60,30 @@ def test_solve_1_run_example():
 
 def test_solve_2_run_example():
     assert run.solve_2("example.txt") == None
+
+
+#def test_solve_1_run_example():
+#    assert run.solve_1("example.txt") == None
+#
+#
+#def test_solve_2_run_example():
+#    assert run.solve_2("example.txt") == None
+#
+#
+#def test_solve_1_cleaned_example():
+#    assert cleaned.solve_1("input.txt") == None
+#
+#
+#def test_solve_2_cleaned_input():
+#    assert cleaned.solve_2("input.txt") == None
+#
+#
+#def test_solve_1_cleaned_input():
+#    assert cleaned.solve_1("input.txt") == None
+#
+#
+#def test_solve_2_cleaned_input():
+#    assert cleaned.solve_2("input.txt") == None
 """
 with open(project_tests_path, "w") as f:
     f.write(test_template)
@@ -103,6 +127,30 @@ if __name__ == "__main__":
 """
 with open(project_run_path, "w") as f:
     f.write(run_template)
+
+project_readme_path = f"{project_path}/README.rst"
+print("Writing README template into:", project_readme_path)
+readme_template = """
+**************************
+--- Day xxx: yyy ---
+**************************
+`<https://adventofcode.com/2021/day/xxx>`_
+
+
+Personal Stats:
+###############
+
+
+========  ====  =====  ========  ====  =====
+Part 1                 Part 2       
+---------------------  ---------------------
+Time      Rank  Score  Time      Rank  Score
+========  ====  =====  ========  ====  =====
+zzzz
+========  ====  =====  ========  ====  =====
+"""
+with open(project_readme_path, "w") as f:
+    f.write(readme_template)
 
 # Starting watchdog!
 try:
