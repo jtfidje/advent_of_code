@@ -34,7 +34,7 @@ project_path = f"{pathlib.Path(__file__).parent.absolute()}/day_{day}"
 
 subprocess.run(["poetry", "new", f"day_{day}"])
 os.chdir(project_path)
-subprocess.run(["poetry", "add", "pyperclip"])
+subprocess.run(["poetry", "update"])
 subprocess.run(["touch", "example.txt", f"day_{day}/cleaned.py"])
 
 
@@ -62,20 +62,20 @@ def test_solve_2_run_example():
     assert run.solve_2("example.txt") == None
 
 
-#def test_solve_1_run_example():
-#    assert run.solve_1("example.txt") == None
+#def test_solve_1_run_input():
+#    assert run.solve_1("input.txt") == None
 #
 #
-#def test_solve_2_run_example():
-#    assert run.solve_2("example.txt") == None
+#def test_solve_2_run_input():
+#    assert run.solve_2("input.txt") == None
 #
 #
 #def test_solve_1_cleaned_example():
 #    assert cleaned.solve_1("input.txt") == None
 #
 #
-#def test_solve_2_cleaned_input():
-#    assert cleaned.solve_2("input.txt") == None
+#def test_solve_2_cleaned_example():
+#    assert cleaned.solve_2("example.txt") == None
 #
 #
 #def test_solve_1_cleaned_input():
@@ -91,7 +91,6 @@ with open(project_tests_path, "w") as f:
 project_run_path = f"{project_path}/day_{day}/run.py"
 print("Writing run templates into:", project_run_path)
 run_template = f"""
-import pyperclip
 from typing import List
 
 def read_lines(path: str) -> List[str]:
@@ -125,9 +124,6 @@ if __name__ == "__main__":
     print("\\n- - -\\n")
     print(f"Problem 1: {{ans_1_input}}")
     print(f"Problem 2: {{ans_2_input}}")
-
-    pyperclip.copy(ans_1_input)
-    # pyperclip.copy(ans_2_input)
 """
 with open(project_run_path, "w") as f:
     f.write(run_template)
