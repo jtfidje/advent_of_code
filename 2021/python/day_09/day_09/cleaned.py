@@ -2,12 +2,9 @@ import math
 from typing import Dict, List, Tuple
 
 
-def read_lines(path: str) -> List[str]:
+def read_height_map(path: str) -> List[List[int]]:
     with open(path, "r") as f:
-        lines = [line for line in f.readlines()]
-        lines = [line.strip() for line in lines]
-        lines = [[int(x) for x in line] for line in lines]
-        return lines
+        return [[int(x) for x in line.strip()] for line in f.readlines()]
 
 
 def check_low_point(i: int, j: int, height_map: List[List[int]]) -> bool:
@@ -69,7 +66,7 @@ def calculate_basin_size(
 
 
 def solve_1(path: str) -> int:
-    height_map = read_lines(path)
+    height_map = read_height_map(path)
     risk_lvl_sum = 0
     for i, row in enumerate(height_map):
         for j, col in enumerate(row):
@@ -80,7 +77,7 @@ def solve_1(path: str) -> int:
 
 
 def solve_2(path: str) -> int:
-    height_map = read_lines(path)
+    height_map = read_height_map(path)
     basin_sizes = []
     visited = {}
     for i, row in enumerate(height_map):
