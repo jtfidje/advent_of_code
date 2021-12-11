@@ -71,7 +71,7 @@ def test_solve_2_run_example():
 #
 #
 #def test_solve_1_cleaned_example():
-#    assert cleaned.solve_1("input.txt") == None
+#    assert cleaned.solve_1("example.txt") == None
 #
 #
 #def test_solve_2_cleaned_example():
