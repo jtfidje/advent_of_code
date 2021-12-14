@@ -93,19 +93,19 @@ print("Writing run templates into:", project_run_path)
 run_template = f"""
 from typing import List
 
-def read_lines(path: str) -> List[str]:
+def read_lines(path: str):
     with open(path, "r") as f:
         lines = [line for line in f.readlines()]
         lines = [line.strip() for line in lines]
         return lines
 
 
-def solve_1(path: str) -> int:
+def solve_1(path: str):
     data = read_lines(path)
     ...
 
 
-def solve_2(path: str) -> int:
+def solve_2(path: str):
     data = read_lines(path)
     ...
 
