@@ -49,6 +49,23 @@ print("Writing input to:", project_input_path)
 with open(project_input_path, "w") as f:
     f.write(res.text)
 
+project_utils_path = f"{project_path}/utils.py"
+print("Writing functions for input convertion into:", project_utils_path)
+utils_template = f"""
+def to_numbers():
+    with open(f"{project_input_path}", "r") as f:
+        numbers = [int(line.strip()) for line in f.readlines()]
+    return numbers
+
+
+def to_string():
+    with open(f"{project_input_path}", "r") as f:
+        strings = [str(line.strip()) for line in f.readlines()]
+    return strings
+"""
+with open(project_utils_path, "w") as f:
+    f.write(utils_template)
+
 project_tests_path = f"{project_path}/tests/test_day_{day}.py"
 print("Writing test templates into:", project_tests_path)
 test_template = f"""
