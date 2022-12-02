@@ -91,6 +91,7 @@ with open(project_tests_path, "w") as f:
 project_run_path = f"{project_path}/day_{day}/run.py"
 print("Writing run templates into:", project_run_path)
 run_template = """
+from functools import reduce
 def read_lines(path: str):
     with open(path, "r") as f:
         lines = [line for line in f.readlines()]
