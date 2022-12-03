@@ -99,6 +99,13 @@ def read_lines(path: str):
         return lines
 
 
+def read_numbers(path: str):
+    with open(path, "r") as f:
+        lines = [line for line in f.readlines()]
+        lines = [line.strip() for line in lines]
+        return list(map(int, lines))
+
+
 def solve_1(path: str):
     data = read_lines(path)
     ...
@@ -118,22 +125,22 @@ if __name__ == "__main__":
     ans_1_input = solve_1(path)
     ans_2_input = solve_2(path)
     
-    print(f"Example 1: {{ans_1_example}}")
-    print(f"Example 2: {{ans_2_example}}")
+    print(f"Example 1: {ans_1_example}")
+    print(f"Example 2: {ans_2_example}")
     print("\\n- - -\\n")
-    print(f"Problem 1: {{ans_1_input}}")
-    print(f"Problem 2: {{ans_2_input}}")
+    print(f"Problem 1: {ans_1_input}")
+    print(f"Problem 2: {ans_2_input}")
 """  # noqa: W291, W293
 with open(project_run_path, "w") as f:
     f.write(run_template)
 
 project_readme_path = f"{project_path}/README.rst"
 print("Writing README template into:", project_readme_path)
-readme_template = """
+readme_template = f"""
 **************************
---- Day xxx: yyy ---
+--- Day {day}: yyy ---
 **************************
-`<https://adventofcode.com/2022/day/xxx>`_
+`<https://adventofcode.com/2022/day/{day}>`_
 
 
 Personal Stats:
@@ -145,7 +152,7 @@ Part 1                 Part 2
 ---------------------  ---------------------
 Time      Rank  Score  Time      Rank  Score
 ========  ====  =====  ========  ====  =====
-zzzz
+
 ========  ====  =====  ========  ====  =====
 """  # noqa: W291
 with open(project_readme_path, "w") as f:
