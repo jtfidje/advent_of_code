@@ -1,8 +1,10 @@
 import argparse
 import os
 import pathlib
+import re
 import requests
 import subprocess
+import time
 from datetime import datetime
 
 _year, _today = datetime.now().strftime("%Y,%d").split(",")
@@ -28,11 +30,12 @@ args = parser.parse_args()
 year = args.year
 day = args.day
 
-aoc_input_url = f"https://adventofcode.com/{year}/day/{int(day)}/input"
+aoc_base_url = f"https://adventofcode.com/{year}/day/{int(day)}"
+aoc_input_url = f"{aoc_base_url}/input"
 project_path = f"{pathlib.Path(__file__).parent.absolute()}/day_{day}"
 
 
-subprocess.run(["poetry", "new", f"day_{day}"])
+subprocess.run(["poetry", "new", "--readme", "rst", f"day_{day}"])
 os.chdir(project_path)
 subprocess.run(["poetry", "add", "--group", "dev", "pytest"])
 subprocess.run(["touch", "example.txt", f"day_{day}/cleaned.py"])
@@ -41,6 +44,15 @@ subprocess.run(["touch", "example.txt", f"day_{day}/cleaned.py"])
 print("Getting input from:", aoc_input_url)
 sess = requests.Session()
 sess.cookies.set("session", os.environ.get("AOC_SESSION"))
+
+# Fetch title
+res = sess.get(aoc_base_url)
+res.raise_for_status()
+title_banner = re.search(r"(--- Day \d+: .* ---)", res.text)[1]
+
+time.sleep(0.5)
+
+# Fetch input
 res = sess.get(aoc_input_url)
 res.raise_for_status()
 
@@ -53,6 +65,7 @@ project_tests_path = f"{project_path}/tests/test_day_{day}.py"
 print("Writing test templates into:", project_tests_path)
 test_template = f"""
 from day_{day} import run, cleaned
+
 
 def test_solve_1_run_example():
     assert run.solve_1("example.txt") == None
@@ -84,7 +97,7 @@ def test_solve_2_run_example():
 #
 #def test_solve_2_cleaned_input():
 #    assert cleaned.solve_2("input.txt") == None
-"""
+"""[1:]
 with open(project_tests_path, "w") as f:
     f.write(test_template)
 
@@ -92,6 +105,8 @@ project_run_path = f"{project_path}/day_{day}/run.py"
 print("Writing run templates into:", project_run_path)
 run_template = """
 from functools import reduce
+
+
 def read_lines(path: str):
     with open(path, "r") as f:
         lines = [line for line in f.readlines()]
@@ -117,20 +132,12 @@ def solve_2(path: str):
 
 
 if __name__ == "__main__":
-    path = "example.txt"
-    ans_1_example = solve_1(path)    
-    ans_2_example = solve_2(path)
-
-    path = "input.txt"
-    ans_1_input = solve_1(path)
-    ans_2_input = solve_2(path)
-    
-    print(f"Example 1: {ans_1_example}")
-    print(f"Example 2: {ans_2_example}")
+    print(f"Example 1: {solve_1('example.txt')}")
+    print(f"Example 2: {solve_2('example.txt')}")
     print("\\n- - -\\n")
-    print(f"Problem 1: {ans_1_input}")
-    print(f"Problem 2: {ans_2_input}")
-"""  # noqa: W291, W293
+    print(f"Problem 1: {solve_1('input.txt')}")
+    print(f"Problem 2: {solve_2('input.txt')}")
+"""[1:]  # noqa: W291, W293
 with open(project_run_path, "w") as f:
     f.write(run_template)
 
@@ -138,7 +145,7 @@ project_readme_path = f"{project_path}/README.rst"
 print("Writing README template into:", project_readme_path)
 readme_template = f"""
 **************************
---- Day {day}: yyy ---
+{title_banner}
 **************************
 `<https://adventofcode.com/2022/day/{day}>`_
 
@@ -161,7 +168,12 @@ with open(project_readme_path, "w") as f:
 # Starting watchdog!
 try:
     subprocess.run(
-        f"while inotifywait -re modify {project_path}; do poetry run pytest tests/; done",  # noqa: E501
+        (
+            f"while inotifywait -re modify {project_path} ;"
+            "do poetry run pytest tests/ "
+            f"&& poetry run python {project_path}/day_{day}/run.py;"
+            "done"
+        ),
         shell=True
     )
 except KeyboardInterrupt:
