@@ -104,29 +104,34 @@ with open(project_tests_path, "w") as f:
 project_run_path = f"{project_path}/day_{day}/run.py"
 print("Writing run templates into:", project_run_path)
 run_template = """
+import json
 from functools import reduce
+from typing import Any
+
+def json_print(obj: dict | list) -> None:
+    print(json.dumps(obj, indent=4))
 
 
-def read_lines(path: str):
+def read_lines(path: str) -> list[str]:
     with open(path, "r") as f:
         lines = [line for line in f.readlines()]
         lines = [line.strip() for line in lines]
         return lines
 
 
-def read_numbers(path: str):
+def read_numbers(path: str) -> list[int]:
     with open(path, "r") as f:
         lines = [line for line in f.readlines()]
         lines = [line.strip() for line in lines]
         return list(map(int, lines))
 
 
-def solve_1(path: str):
+def solve_1(path: str) -> Any:
     data = read_lines(path)
     ...
 
 
-def solve_2(path: str):
+def solve_2(path: str) -> Any:
     data = read_lines(path)
     ...
 
