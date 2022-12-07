@@ -54,7 +54,10 @@ time.sleep(0.5)
 
 # Fetch input
 res = sess.get(aoc_input_url)
-res.raise_for_status()
+try:
+    res.raise_for_status()
+except requests.exceptions.HTTPError:
+    print("Failed!")
 
 project_input_path = f"{project_path}/input.txt"
 print("Writing input to:", project_input_path)
@@ -169,6 +172,20 @@ Time      Rank  Score  Time      Rank  Score
 """  # noqa: W291
 with open(project_readme_path, "w") as f:
     f.write(readme_template)
+
+# Open the files
+try:
+    subprocess.run(
+        (
+            "code --reuse-window "
+            f"{project_path}/example.txt "
+            f"{project_path}/tests/test_day_{day}.py "
+            f"{project_path}/day_{day}/run.py"
+        ),
+        shell=True
+    )
+except Exception as err:
+    print(f"Failed to open files: {err}")
 
 # Starting watchdog!
 try:
