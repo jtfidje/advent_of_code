@@ -71,16 +71,18 @@ def solve_2(path: str) -> Any:
             operations.append({"type": op, "value": value, "counter": 0})
 
 
+    crt = ""
     operation = operations.pop(0)
-    counter = 1
-    signal_strengths = []
+    counter = 0
     x = 1
     while True:
         operation["counter"] += 1
-    
-        if (counter == 20 or (counter - 20) % 40 == 0):
-            signal_strengths.append(counter * x)
 
+        if counter in [x - 1, x, x + 1]:
+            crt += "#"
+        else:
+            crt += "."
+        
         if operation["counter"] == 2:
 
             x += operation["value"]
@@ -90,14 +92,18 @@ def solve_2(path: str) -> Any:
             except IndexError:
                 break
 
+        if counter == 39:
+            crt += "\n"
+            counter = -1
+
         counter += 1
 
-    return sum(signal_strengths)
+    return crt
 
 
 if __name__ == "__main__":
     print(f"Example 1: {solve_1('example.txt')}")
-    print(f"Example 2: {solve_2('example.txt')}")
+    print(f"Example 2: \n{solve_2('example.txt')}\n")
     print("\n- - -\n")
     print(f"Problem 1: {solve_1('input.txt')}")
-    print(f"Problem 2: {solve_2('input.txt')}")
+    print(f"Problem 2: \n{solve_2('input.txt')}\n")
