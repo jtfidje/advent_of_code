@@ -3,13 +3,22 @@ import os
 import re
 import subprocess
 import sys
+import time
 from contextlib import contextmanager
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from loguru import logger
 from requests import Session
 
 from aoc_template.config import settings
+
+def block_execution(year: int, day: int):
+    """Block execution until the time is greater than {year}-12-{day}T06:00:00 Europe/Oslo time"""
+    target_time = datetime(year, 12, day, 6, 0, 0, tzinfo=ZoneInfo("Europe/Oslo"))
+    logger.info(f"Blocking execution until {target_time}")
+    while datetime.now(tz=ZoneInfo("Europe/Oslo")) < target_time:
+        time.sleep(0.5)
 
 
 def parse_arguments() -> tuple[str, str]:

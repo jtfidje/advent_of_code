@@ -9,6 +9,9 @@ from aoc_template.config import settings
 
 year, day = utils.parse_arguments()
 
+# Wait until 06:00:00 Europe/Oslo time
+utils.block_execution(int(year), int(day))
+
 # Setup URLs and Paths
 aoc_base_url = f"https://adventofcode.com/{year}/day/{int(day)}"
 project_path = Path(settings.project_root, year, "python", f"day-{day}")
