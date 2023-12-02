@@ -10,15 +10,33 @@ from zoneinfo import ZoneInfo
 
 from loguru import logger
 from requests import Session
+from rich import print
 
 from aoc_template.config import settings
 
+
 def block_execution(year: int, day: int):
-    """Block execution until the time is greater than {year}-12-{day}T06:00:00 Europe/Oslo time"""
+    """Block execution until the time has passed a target time
+    
+    Target: {year}-12-{day}T06:00:00 Europe/Oslo
+    """
     target_time = datetime(year, 12, day, 6, 0, 0, tzinfo=ZoneInfo("Europe/Oslo"))
-    logger.info(f"Blocking execution until {target_time}")
-    while datetime.now(tz=ZoneInfo("Europe/Oslo")) < target_time:
+    
+    _now = None
+    def puzzle_released() -> bool:
+        nonlocal _now
+        _now = datetime.now(tz=ZoneInfo("Europe/Oslo"))
+        return _now >= target_time
+
+    if puzzle_released():
+        return
+    
+    msg_template = f"  Waiting for puzzle to be released @ {target_time.strftime('%d.%b %H:%M:%S')} ... "
+    while not puzzle_released():
+        print(f"[bold][grey74]{msg_template}[/grey74][grey46]{_now.strftime('%d.%b %H:%M:%S')}[/grey46][/bold]", end="\r")
         time.sleep(0.5)
+    print()
+
 
 
 def parse_arguments() -> tuple[str, str]:
@@ -108,12 +126,15 @@ def start_vscode(project_path: str):
     try:
         subprocess.run(
             (
-                "code-insiders --reuse-window "
+                f"code-insiders --reuse-window "
                 f"{project_path} "
                 f"{project_path}/data/example_1.txt "
                 f"{project_path}/data/example_2.txt "
                 f"{project_path}/tests/test_solver.py "
-                f"{project_path}/solver/run.py "
+                f"{project_path}/solver/part_1.py "
+                f"{project_path}/solver/part_2.py "
+                f"{project_path}/solver/utils.py "
+                f"{project_path}/data/input.txt"
             ),
             shell=True,
         )
@@ -133,17 +154,15 @@ def start_watcher(project_path: str):
         project_path (str): The path to the project to watch
     """
     os.chdir(project_path)
-    
-    try:
-        subprocess.run(
-            (
-                f"while inotifywait -q -re modify {project_path} ;"
-                "do clear && "
-                f"poetry run pytest tests/ && "
-                f"poetry run python solver/run.py ;"
-                "done"
-            ),
-            shell=True,
-        )
-    except KeyboardInterrupt:
-        ...
+    subprocess.run(
+        (
+            "PYTHONDONOTWRITEBYTECODE=1 bash -c '"
+            f"while inotifywait -q -re modify {project_path} ; "
+            "do clear && "
+            "poetry run pytest tests/ -p no:cacheprovider && "
+            "poetry run python solver/part_1.py && "
+            "poetry run python solver/part_2.py ; "
+            "done'"
+        ),
+        shell=True,
+    )

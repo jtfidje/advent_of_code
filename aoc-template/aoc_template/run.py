@@ -1,4 +1,5 @@
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -9,8 +10,12 @@ from aoc_template.config import settings
 
 year, day = utils.parse_arguments()
 
-# Wait until 06:00:00 Europe/Oslo time
-utils.block_execution(int(year), int(day))
+try:
+    # Wait until 06:00:00 Europe/Oslo time
+    utils.block_execution(int(year), int(day))
+except KeyboardInterrupt:
+    logger.info("Exiting... ")
+    sys.exit(0)
 
 # Setup URLs and Paths
 aoc_base_url = f"https://adventofcode.com/{year}/day/{int(day)}"
@@ -18,7 +23,7 @@ project_path = Path(settings.project_root, year, "python", f"day-{day}")
 
 if not project_path.exists():
     logger.info(f"Creating project at {project_path}")
-    project_path.mkdir()
+    project_path.mkdir(parents=True)
     
     # Copy template files
     logger.info("Copying template files")
@@ -56,4 +61,8 @@ if not project_path.exists():
 
 # Start watcher
 logger.info("Starting watcher!")
-utils.start_watcher(project_path)
+try:
+    utils.start_watcher(project_path)
+except KeyboardInterrupt:
+    logger.info("Exiting...")
+    sys.exit(0)
