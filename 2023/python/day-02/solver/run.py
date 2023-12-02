@@ -1,15 +1,10 @@
 # flake8: noqa: F841
 import re
-import json
 from functools import reduce  # noqa: F401
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any
 
 data_path = Path(__file__).parent.parent.absolute() / "data"
-
-
-def json_print(obj: dict | list) -> None:
-    print(json.dumps(obj, indent=4))
 
 
 def read_lines(path: str) -> list[str]:
@@ -18,22 +13,6 @@ def read_lines(path: str) -> list[str]:
         lines = [line.strip() for line in lines]
         lines = [line.split(": ")[1] for line in lines]
         return lines
-
-
-def read_numbers(path: str) -> list[int]:
-    with open(path, "r") as f:
-        lines = [line for line in f.readlines()]
-        lines = [line.strip() for line in lines]
-        return list(map(int, lines))
-
-
-def sliding_window(
-    array: list, window: int, step: int | None = None
-) -> Generator[list, None, None]:
-    if step is None:
-        step = window
-    for i in range(0, len(array) - window + 1, step):
-        yield array[i : i + window]
 
 
 def solve_1(path: str) -> Any:
@@ -62,8 +41,6 @@ def solve_1(path: str) -> Any:
     return sum(possible_games)
     
 
-                
-
 def solve_2(path: str) -> Any:
     pattern = r"((\d+) (blue|green|red)(?:, )?)"
     possible_games = []
@@ -83,9 +60,6 @@ def solve_2(path: str) -> Any:
         power = reduce(lambda x, y: x * y, max_cubes.values())
         result += power
     return result
-
-
-    
 
 
 if __name__ == "__main__":
