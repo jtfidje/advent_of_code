@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from solver import part_1, part_2
+from solver import part_1, part_2, cleaned
 
 data_path = Path(__file__).parent.parent.absolute() / "data"
 
