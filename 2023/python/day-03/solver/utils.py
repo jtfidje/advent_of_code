@@ -54,7 +54,7 @@ def get_adjacent(row: int, col: int, matrix: list[list], width: int = 1, height:
                 continue
 
             # Check if out of bounds
-            if out_of_bounds(row, col, matrix):
+            if out_of_bounds(i, j, matrix):
                 continue
             
             adjacent.append((i, j))

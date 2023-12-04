@@ -34,13 +34,13 @@ def test_solve_1_cleaned_example():
    assert cleaned.solve_1(data_path / "example_1.txt") == 4361
 
 
-# def test_solve_2_cleaned_example():
-#    assert cleaned.solve_2(data_path / "example_2.txt") == 467835
+def test_solve_2_cleaned_example():
+   assert cleaned.solve_2(data_path / "example_2.txt") == 467835
 
 
 def test_solve_1_cleaned_input():
    assert cleaned.solve_1(data_path / "input.txt") == 533775
 
 
-# def test_solve_2_cleaned_input():
-#    assert cleaned.solve_2(data_path / "input.txt") == 78236071
+def test_solve_2_cleaned_input():
+   assert cleaned.solve_2(data_path / "input.txt") == 78236071
