@@ -6,6 +6,11 @@ def json_print(obj: dict | list) -> None:
     print(json.dumps(obj, indent=4))
 
 
+def read_data(path: str) -> str:
+    with open(path, "r") as f:
+        return f.read().strip()
+
+
 def read_lines(path: str) -> list[str]:
     with open(path, "r") as f:
         lines = [line for line in f.readlines()]
