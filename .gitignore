@@ -11,3 +11,6 @@ __pycache__/
 
 # Rust
 target/
+
+# Don't commit data input files
+data/
