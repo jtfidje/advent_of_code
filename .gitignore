@@ -14,3 +14,5 @@ target/
 
 # Don't commit data input files
 data/
+input.txt
+example*.txt
