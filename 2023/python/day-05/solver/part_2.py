@@ -18,8 +18,15 @@ def calculate(start, r, map_index):
     results = []
     while r > 0:
         for dest, source, _r in maps[map_index]:
-            if start < source or start >= source + _r:
+            if (start < source and start + r <= source) or start >= source + _r:
                 continue
+
+            if start < source:
+                temp_r = r - (source - start)
+                results.append(calculate(start, temp_r, map_index=map_index))
+
+                start = source
+                r = temp_r
 
             new_start = dest + (start - source)
             new_r = (start + r) - (source + _r)
