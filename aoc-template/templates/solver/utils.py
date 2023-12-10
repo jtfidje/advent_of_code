@@ -26,12 +26,12 @@ def read_numbers(path: str) -> list[int]:
 
 
 def sliding_window(
-    array: list, window: int, step: int | None = None
+    array: list, window_size: int, step: int | None = None
 ) -> Generator[list, None, None]:
     if step is None:
-        step = window
-    for i in range(0, len(array) - window + 1, step):
-        yield array[i : i + window]
+        step = window_size
+    for i in range(0, len(array) - window_size + 1, step):
+        yield array[i : i + window_size]
 
 
 def out_of_bounds(row: int, col: int, matrix: list[list]):
