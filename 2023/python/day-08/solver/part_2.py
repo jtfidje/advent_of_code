@@ -59,8 +59,6 @@ def solve(path: str):
             i = counter % len(instructions)
 
             if current.name.endswith("Z"):
-                if node.name == "HVA":
-                    print(current.name, counter, i, instructions[i])
                 states[node.name]["Z-position"] = {"hit_on": counter}
 
             c = (current.name, i)
@@ -75,10 +73,43 @@ def solve(path: str):
             counter += 1
 
     print("State:")
+    _states = []
+    for key, value in states.items():
+        value["name"] = key
+        _states.append(value)
+    states = sorted(_states, key=lambda x: x["Loop-position"]["size"])
     utils.json_print(states)
     print()
 
 
+    A = states.pop(0)["Loop-position"]
+    B = states.pop(0)["Loop-position"]
+    counter = 0
+    while states:
+        if counter > 0:
+            A = states.pop(0)["Loop-position"]
+        x = B["size"] % A["size"]
+
+        print(f"{x=}")
+
+        match x:
+            case 0:
+                total_length = B["size"]
+
+            case 2:
+                total_length = B["size"] * 2
+
+            case _:
+                total_length = B["size"] * A["size"]
+
+        print(f"{total_length=}")
+        print()
+
+        B = {"size": total_length}
+
+        counter += 1
+
+# TOO HIGH: 24085386913221873651759779
 
 if __name__ == "__main__":
     answer = solve(Path(data_path, "input.txt"))
