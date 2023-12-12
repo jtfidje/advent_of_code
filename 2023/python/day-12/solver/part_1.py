@@ -1,4 +1,4 @@
-# flake8: noqa: F401
+import re
 
 from pathlib import Path
 
@@ -7,38 +7,32 @@ from solver import utils
 data_path = Path(__file__).parent.parent.absolute() / "data"
 
 
+def recursive_check(string: str, pattern: str):
+    if "?" not in string:
+        match = re.match(pattern, string) is not None
+        return 1 if match else 0
+
+    res = 0
+
+    res += recursive_check(string.replace("?", ".", 1), pattern)
+    res += recursive_check(string.replace("?", "#", 1), pattern)
+
+    return res
+
+
 def solve(path: str):
     data = utils.read_lines(path)
 
-    for data_i, line in enumerate(data):
+    results = 0
+    for line in data:
         springs, groups = line.split()
-        springs = list(springs)
         groups = list(map(int, groups.split(",")))
 
-        start = 0
-        for group in groups:
-            for i, window in enumerate(utils.sliding_window(springs[start:], window_size=group, step=1), start=start):
+        pattern = r"^\.*#" + r"\.+#".join("{" + str(group) + "}" for group in groups) + r"\.*$"
+        
+        results += recursive_check(springs, pattern)
 
-                if all(char == "?" for char in window):
-                    for j in range(i, i + group):
-                        springs[j] = "#"
-
-                    try:
-                        if springs[i + group] == "?":
-                            springs[i + group] = "."
-                    except:
-                        ...
-
-                    start = i + group + 1
-
-                    break
-
-        data[data_i] = "".join(springs)
-
-    for line in data:
-        print(line)
-
-    return 10
+    return results
 
 if __name__ == "__main__":
     answer = solve(Path(data_path, "input.txt"))

@@ -18,7 +18,7 @@ def test_solve_2_run_example():
     if answer is None:
         assert True
     else:
-        assert answer == ...
+        assert answer == 525152
 
 
 # def test_solve_1_run_input():
