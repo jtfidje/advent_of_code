@@ -10,40 +10,34 @@ data_path = Path(__file__).parent.parent.absolute() / "data"
 def solve(path: str):
     data = utils.read_lines(path)
 
-    counter = defaultdict(lambda: defaultdict(lambda: {"rocks": 0, "row": len(data) + 1}))
-    current_square = defaultdict(int)
+    results = 0
+    counter = defaultdict(lambda: {"rocks": 0, "square_index": len(data) + 1})
+
     for row, line in enumerate(data):
         for col, char in enumerate(line):
             match char:
                 case ".":
                     continue
 
-                case "#":
-                    current_square[col] += 1
-                    counter[col][current_square[col]]["row"] = row
-                    continue
-
                 case "O":
-                    square = current_square[col]
-                    counter[col][square]["rocks"] += 1
+                    counter[col]["rocks"] += 1
 
-    results = 0
-    for col, element in counter.items():
-        for _element in element.values():
-            if _element["rocks"] == 0:
-                continue
+                case "#":
+                    rocks = counter[col]["rocks"]
+                    index = counter[col]["square_index"]
 
-            rock_count = _element["rocks"]
-            square_index = _element["row"]
+                    for i in range(index - 1, index - rocks - 1, -1):
+                        results += i
 
-            print(col, rock_count, square_index)
+                    counter[col] = {"rocks": 0, "square_index": len(data) - row}
 
-            for i in range(square_index - 1, square_index - rock_count, - 1):
-                print(i)
-                
-                results += i
+    for obj in counter.values():
+        rocks = obj["rocks"]
+        index = obj["square_index"]
 
-            print()
+        for i in range(index - 1, index - rocks - 1, -1):
+            results += i
+                    
 
     return results
 
