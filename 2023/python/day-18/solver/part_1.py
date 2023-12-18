@@ -12,70 +12,88 @@ def solve(path: str):
     data = utils.read_lines(path)
     data = [line.split(" (")[0] for line in data]
 
-    max_width = 0
-    max_height = 0
-    height = 0
-    width = 0
+    pos = (0,0)
+    points = []
+    min_col = 0
+    min_row = 0
+    max_col = 0
+    max_row = 0
     for line in data:
         direction, number = line.split()
         number = int(number)
 
-        if direction == "R":
-            width += number
-            max_width = max(max_width, width)
-        elif direction == "L":
-            width -= number
-        elif direction == "U":
-            height -= number
-        elif direction == "D":
-            height += number
-            max_height = max(max_height, height)
+        match direction:
+            case "R":
+                for _ in range(number):
+                    pos = (
+                        pos[0], 
+                        pos[1] + 1
+                    )
+                    points.append(pos)
+
+                    max_col = max(max_col, pos[1])
+                    
+            case "L":
+                for _ in range(number):
+                    pos = (
+                        pos[0], 
+                        pos[1] - 1
+                    )
+                    points.append(pos)
+
+                    min_col = min(min_col, pos[1])
+
+            case "U":
+                for _ in range(number):
+                    pos = (
+                        pos[0] - 1, 
+                        pos[1]
+                    )
+                    points.append(pos)
+
+                    min_row = min(min_row, pos[0])
+
+            case "D":
+                for _ in range(number):
+                    pos = (
+                        pos[0] + 1, 
+                        pos[1]
+                    )
+                    points.append(pos)
+
+                    max_row = max(max_row, pos[0])
 
     matrix = []
-    for _ in range(max_height + 1):
-        line = ["."] * (max_width + 1)
+    for _ in range(max_row + abs(min_row) + 1):
+        line = ["."] * (max_col + abs(min_col) + 1)
         matrix.append(line)
 
-    position = [0,0]
-    matrix[0][0] = "#"
-    for line in data:
-        direction, number = line.split()
-        number = int(number)
+    for point in points:
+        row = point[0] + abs(min_row)
+        col = point[1] + abs(min_col)
 
-        try:
-            match direction:
-                case "R":
-                    for _ in range(number):
-                        position[1] += 1
-                        matrix[position[0]][position[1]] = "#"
-                
-                case "L":
-                    for _ in range(number):
-                        position[1] -= 1
-                        matrix[position[0]][position[1]] = "#"
+        matrix[row][col] = "#"
 
-                case "U":
-                    for _ in range(number):
-                        position[0] -= 1
-                        matrix[position[0]][position[1]] = "#"
+    
+    with open("/tmp/res.txt", "w") as f:
+        for line in matrix:
+            f.write("".join(line) + "\n")
 
-                case "D":
-                    for _ in range(number):
-                        position[0] += 1
-                        matrix[position[0]][position[1]] = "#"
-        except:
-            breakpoint()
 
-    pattern = r"(^\.*#+)(\.*)(#+\.*$)"
+    pattern = r"(?:(\.*#+)(\.*)(#+\.*))"
+
     for i, line in enumerate(matrix):
+        temp = line[:]
         line = "".join(line)
-        match = re.search(pattern, line)
-        if match is None:
-            continue
-        group = match.groups()[1]
+        for match in re.finditer(pattern, line):
+            group = match.groups()[1]
+            res = re.sub(pattern, r"\1" + "#" * len(group) + r"\3", line[match.start():match.end()], count=1)
 
-        res = re.sub(pattern, r"\1" + "#" * len(group) + r"\3", line)
-        matrix[i] = res
+            temp[match.start():match.end()] = list(res)
+            
+        matrix[i] = "".join(temp)
+
+    
 
     return "".join(matrix).count("#")
 
@@ -84,4 +102,5 @@ def solve(path: str):
 
 if __name__ == "__main__":
     answer = solve(Path(data_path, "input.txt"))
+    #answer = solve(Path(data_path, "example_1.txt"))
     print(f"Problem 1: {answer}")
