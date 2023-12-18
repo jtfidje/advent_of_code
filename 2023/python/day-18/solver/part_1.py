@@ -8,6 +8,40 @@ from solver import utils
 data_path = Path(__file__).parent.parent.absolute() / "data"
 
 
+def flood_fill_outer(matrix):
+    # Flood-fill matrix perimiter
+    to_visit = [
+        *[(0, col) for col in range(len(matrix[0]))],
+        *[(len(matrix) - 1, col) for col in range(len(matrix[0]))],
+        *[(row, 0) for row in range(len(matrix))],
+        *[(row, len(matrix[0]) - 1) for row in range(len(matrix))],
+    ]
+
+    visited = {}
+    while to_visit:
+        pos = to_visit.pop(0)
+        visited[pos] = None
+
+        row, col = pos
+        symbol = matrix[row][col]
+
+        if symbol != ".":
+            continue
+        
+        temp = list(matrix[row])
+        temp[col] = "x"
+        matrix[row] = "".join(temp)
+
+        for new_pos in utils.get_adjacent(*pos, matrix=matrix, include_corners=True):
+            if new_pos in visited or new_pos in to_visit:
+                continue
+
+            to_visit.append(new_pos)
+
+    for line in matrix:
+        print(line)
+
+
 def solve(path: str):
     data = utils.read_lines(path)
     data = [line.split(" (")[0] for line in data]
@@ -75,27 +109,17 @@ def solve(path: str):
         matrix[row][col] = "#"
 
     
+    flood_fill_outer(matrix)
+
     with open("/tmp/res.txt", "w") as f:
         for line in matrix:
             f.write("".join(line) + "\n")
 
+    string = ""
+    for line in matrix:
+        string += "".join(line)
 
-    pattern = r"(?:(\.*#+)(\.*)(#+\.*))"
-
-    for i, line in enumerate(matrix):
-        temp = line[:]
-        line = "".join(line)
-        for match in re.finditer(pattern, line):
-            group = match.groups()[1]
-            res = re.sub(pattern, r"\1" + "#" * len(group) + r"\3", line[match.start():match.end()], count=1)
-
-            temp[match.start():match.end()] = list(res)
-            
-        matrix[i] = "".join(temp)
-
-    
-
-    return "".join(matrix).count("#")
+    return string.count("#") + string.count(".")
 
 
 

@@ -44,8 +44,17 @@ def out_of_bounds(row: int, col: int, matrix: list[list]):
     return False
 
 
-def get_adjacent(row: int, col: int, matrix: list[list], width: int = 1, height: int = 1) -> tuple[int, int]:
+def get_adjacent(row: int, col: int, matrix: list[list], width: int = 1, height: int = 1, include_corners: bool = True) -> tuple[int, int]:
     skip_positions = [(row + i, col + j) for i in range(height) for j in range(width)]
+
+    if not include_corners:
+        skip_positions.extend([
+            (row - 1, col - 1),  # top left
+            (row + height, col - 1),  # bottom left
+            (row - 1, col + width),  # top right
+            (row + height, col + width)  # bottom right
+        ])
+
     adjacent = []
     for i in range(row - 1, row + 1 + height):
         for j in range(col - 1, col + 1 + width):
