@@ -22,6 +22,10 @@ class Module:
 
     def add_output(self, module: Self):
         self.outputs.append(module)
+        module.add_input(self)
+
+    def add_input(self, module: Self):
+        ...
 
     def send(self, pulse: bool):
         for module in self.outputs:
@@ -36,6 +40,9 @@ class Module:
 
     def receive(self, name: str, pulse: bool):
         raise NotImplementedError
+    
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}<{self.name}>"
 
 class FlipFlop(Module):
     def receive(self, _, pulse: bool):
@@ -48,7 +55,10 @@ class FlipFlop(Module):
 class Conjunction(Module):
     def __init__(self, name: str, queue: list[tuple[Module, Module, bool]]):
         super().__init__(name, queue)
-        self.cache = defaultdict(bool)
+        self.cache = {}
+
+    def add_input(self, module: Module):
+        self.cache[module.name] = False
 
     def receive(self, name: str, pulse: bool):
         self.cache[name] = pulse
@@ -74,7 +84,7 @@ class Output(Module):
 def solve(path: str):
     data = utils.read_lines(path)
     queue: list[tuple[Module, Module, bool]] = []
-    modules: dict[str, Module] = {"output": Output("output", None)}
+    modules: dict[str, Module] = {}
     _outputs: dict[str, list[str]] = {}
     for line in data:
         x, y = line.split(" -> ")
@@ -92,13 +102,16 @@ def solve(path: str):
     for key, output_list in _outputs.items():
         module = modules[key]
         for name in output_list:
+            if name not in modules:
+                modules[name] = Output(name, None)
+
             module.add_output(modules[name])
 
     button = Button("button", queue)
     button.add_output(modules["broadcaster"])
-    button.send(pulse=False)
 
     for _ in range(1_000):
+        button.send(pulse=False)
         while queue:
             sender, receiver, pulse = queue.pop(0)
             receiver.receive(sender.name, pulse)
@@ -107,10 +120,13 @@ def solve(path: str):
     for module in modules.values():
         highs += module.records[True]
         lows += module.records[False]
+    highs += button.records[True]
+    lows += button.records[False]
     
     return highs * lows
 
 
 if __name__ == "__main__":
     answer = solve(Path(data_path, "input.txt"))
+    #answer = solve(Path(data_path, "example_1_1.txt"))
     print(f"Problem 1: {answer}")
