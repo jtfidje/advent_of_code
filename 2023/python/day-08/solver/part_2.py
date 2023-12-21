@@ -1,22 +1,12 @@
 from __future__ import annotations
 
-import multiprocessing
-import time
-from enum import StrEnum
+import math
 from pathlib import Path
 from typing import Self
 
 from solver import utils
 
 data_path = Path(__file__).parent.parent.absolute() / "data"
-
-
-class WorkerState(StrEnum):
-    pending = "pending"
-    running = "running"
-    halted = "halted"
-    finished = "finished"
-
 
 class Node:
     def __init__(self, name: str, left: Self | None, right: Self | None):
@@ -31,34 +21,7 @@ class Node:
         return self.name.endswith("Z")
 
     def __repr__(self):
-        return f"{self.left} <-- {self.name} --> {self.right}"
-
-
-def work(
-        worker_id: str,
-        node: Node,
-        instructions: str,
-        to_manager_queue: multiprocessing.Queue,
-        from_manager_queue: multiprocessing.Queue):
-    print(worker_id, "started!")
-    current_state = WorkerState.running
-    index = 0
-    while True:
-        if current_state == WorkerState.halted:
-            continue
-
-        if node.is_terminal():
-            to_manager_queue.put(index)
-            
-            new_state = from_manager_queue.get()
-            if new_state == WorkerState.finished:
-                break
-
-        i = index % len(instructions)
-        instruction = instructions[i]
-        node = node.get_neighbour(instruction)
-
-        index += 1
+        return f"{self.left.name} <-- {self.name} --> {self.right.name}"
 
 
 def solve(path: str):
@@ -81,50 +44,42 @@ def solve(path: str):
         node = node_map[name]
         node.left = node_map[left]
         node.right = node_map[right]
-
-    nodes = [node for node in node_map.values() if node.name.endswith("A")]
-    with multiprocessing.Manager() as manager:
-        workers: list[dict] = []
-        for i, node in enumerate(nodes):
-            to_manager_queue = manager.Queue()
-            from_manager_queue = manager.Queue()
-            worker_id = f"Worker-{i}"
-        
-            process = multiprocessing.Process(
-                target=work,
-                args=(worker_id, node, instructions, to_manager_queue, from_manager_queue)
-            )
-
-            workers.append({
-                "name": worker_id,
-                "to_manager_queue": to_manager_queue,
-                "from_manager_queue": from_manager_queue,
-                "process": process
-            })
-            process.start()
-
-        index = None
-        print("Main process entering loop...")
-        while True:
-            indices = set()
-            for worker in workers:
-                index = worker["to_manager_queue"].get()
-                indices.add(index)
-
-            if len(indices) == 1:
-                for worker in workers:
-                    worker["from_manager_queue"].put(WorkerState.finished)
-                    worker["process"].join()
-                index = indices[0]
-                break
-            
-            for worker in workers:
-                worker["from_manager_queue"].put(WorkerState.running)
     
-    return index
+    
+    
+    z_positions = []
+    for node in node_map.values():
+        if not node.name.endswith("A"):
+            continue
 
+        current = node
+        counter = 0
+        while True:
+            i = counter % len(instructions)
+
+            if current.name.endswith("Z"):
+                z_positions.append(counter)
+                break
+
+            instruction = instructions[i]
+            current = current.get_neighbour(instruction)
+            counter += 1
+
+    return math.lcm(*z_positions)
 
 if __name__ == "__main__":
     answer = solve(Path(data_path, "input.txt"))
     if answer is not None:
         print(f"Problem 2: {answer}")
+
+
+# TOO LOW  : 200657053
+# WRONG    : 6762553731
+# WRONG    : 6762574977
+# WRONG    : 6762574985
+# WRONG    : 6762574992
+# WRONG    : 1534419482965997741250
+# WRONG    : 16296199706229261503750
+# WRONG    : 14321371777539885335137009
+# WRONG    : 16622685663084705650822704
+# TOO HIGH : 24085386913221873651759779
